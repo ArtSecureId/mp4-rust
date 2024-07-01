@@ -1,4 +1,5 @@
 use bytes::BytesMut;
+use hev1::{HvcCArray, HvcCArrayNalu};
 use std::cmp;
 use std::convert::TryFrom;
 use std::io::{Read, Seek, SeekFrom, Write};
@@ -894,6 +895,38 @@ impl Mp4TrackWriter {
             }
             max_size
         }
+    }
+
+    pub(crate) fn write_parameter<W: Write + Seek>(
+        &mut self,
+        writer: &mut W,
+        nal_unit_type: u8,
+        nal_unit: &[u8],
+    ) -> Result<TrakBox> {
+        if self.trak.mdia.minf.stbl.stsd.hev1.is_some() {
+            let len = nal_unit.len() as u16;
+
+            self.trak
+                .mdia
+                .minf
+                .stbl
+                .stsd
+                .hev1
+                .as_mut()
+                .unwrap()
+                .hvcc
+                .arrays
+                .push(HvcCArray {
+                    completeness: true,
+                    nal_unit_type,
+                    nalus: vec![HvcCArrayNalu {
+                        size: len,
+                        data: nal_unit.to_vec(),
+                    }],
+                });
+        }
+
+        Ok(self.trak.clone())
     }
 
     pub(crate) fn write_end<W: Write + Seek>(&mut self, writer: &mut W) -> Result<TrakBox> {
