@@ -71,7 +71,7 @@ impl<W: Write + Seek> Mp4Writer<W> {
         // TODO largesize
         let mdat_pos = writer.stream_position()?;
         BoxHeader::new(BoxType::MdatBox, HEADER_SIZE).write(&mut writer)?;
-        BoxHeader::new(BoxType::WideBox, HEADER_SIZE).write(&mut writer)?;
+        //BoxHeader::new(BoxType::WideBox, HEADER_SIZE).write(&mut writer)?;
 
         let tracks = Vec::new();
         let timescale = config.timescale;

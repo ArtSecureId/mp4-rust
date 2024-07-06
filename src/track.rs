@@ -915,6 +915,17 @@ impl Mp4TrackWriter {
                 .as_mut()
                 .unwrap()
                 .hvcc
+                .length_size_minus_one = 3;
+
+            self.trak
+                .mdia
+                .minf
+                .stbl
+                .stsd
+                .hev1
+                .as_mut()
+                .unwrap()
+                .hvcc
                 .arrays
                 .push(HvcCArray {
                     completeness: true,
